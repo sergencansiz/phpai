@@ -3,10 +3,12 @@
 class Apriori
 {
     private $data;
+    private $sparse;
 
-    public function __construct()
+    public function __construct(boolean $sparse)
     {
       $this->data = null;
+      $this->sparse = $sparse;
     }
 
     public function fit(array $data)
