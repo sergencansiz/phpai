@@ -1,5 +1,7 @@
 <?php
 
+namespace Phpai;
+
 class Matrix extends ArrayObject
 {
 

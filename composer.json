@@ -1,0 +1,20 @@
+{
+  "name": "scz/phpai",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "sergencansiz",
+      "email": "email@example.com"
+    }
+  ],
+  "require": {
+    "phpunit/phpunit": "8.1.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Phpai" : "src"
+    }
+  }
+}
