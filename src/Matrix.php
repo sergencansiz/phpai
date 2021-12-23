@@ -1,25 +1,30 @@
 <?php
 
-namespace Phpai;
+namespace phpai;
 
-class Matrix extends ArrayObject
+class Matrix
 {
 
-    public function __construct($array = [], $flags = 0, $iteratorClass = "ArrayIterator")
+    /**
+     * @var array|mixed
+     */
+    private $array;
+
+    public function __construct($array = [])
     {
-        parent::__construct($array, $flags, $iteratorClass);
+        $this->array = $array;
     }
 
-    public function getMatrixAsArray()
+    public function get(): array
     {
-        return parent::getArrayCopy();
+        return $this->array;
+    }
+
+    public function shape(): int
+    {
+
+        return count($this->array);
     }
 
 }
-
-
-$mat = new Matrix([[1,2],[2,3]]);
-$mat[0][1] = 111;
-
-print_r($mat->getArray());
 
