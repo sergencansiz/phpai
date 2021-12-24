@@ -54,18 +54,26 @@ class Apriori
 
         $uniques = array_unique(self::flatten($this->data));
         $keep = true;
+        $counter = 0;
         while ($keep === true) {
             $tables = $this->tables;
-            $table = count($this->tables) === 0 ? $uniques : $tables[count($tables)-1];
-            $set = array($table, $uniques);
+            $items = $this->extract_table_items(count($tables)-1);
+            $table = count($this->tables) === 0 ? array($uniques) : array_map(null, ...$items);;
+
+            $set = array_merge($table, array($uniques));
             $cart = $this->cartesian($set);
             $supports = self::support($cart);
 
             if(count($supports) > 0){
-                $this->tables = array_merge($table, $supports);
+                $this->tables = array_merge($this->tables,
+                                            array(
+                                                    $counter => $supports
+                                            )
+                );
             }else{
                 $keep = false;
             }
+            $counter += 1;
         }
 
         return $this->tables;
@@ -84,14 +92,33 @@ class Apriori
     }
 
     /**
+     * Extract only items from tables wıth given index
+     * @param $level index
+     * @return array
+     */
+    private function extract_table_items($index): array
+    {
+        $result = array();
+        foreach ($this->tables[$index] ?: [] as $key => $value){
+            $result = array_merge($result, array($value['items']));
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Taking cartesian of given array values
      * @param $set
      * @return int
      */
-    public function cartesian($set): int
+    public function cartesian($set): array
     {
+        if (!$set) {
+            return array(array());
+        }
+
         $subset = array_shift($set);
-        var_dump($subset);
         $cartesianSubset = self::cartesian($set);
 
         $result = array();
@@ -117,15 +144,21 @@ class Apriori
         $r_table = array();
          foreach ($table as $key => $value){
              $support = 0;
-             foreach ($this->data as $row){
+             foreach ($this->data as $r => $row){
                 $intersect = array_intersect($row, $value);
                 if(count($intersect) === count($value)){
-                        $support += 1;
+                    $support += 1;
                 }
             }
-            $r_table = array_merge($r_table, array($value,$support));
+            $key = implode('-:-',$value);
+            $single = array(
+                        $key =>array(
+                                'items' => $value,
+                                'support' => $support
+                            )
+                    );
+            $r_table = array_merge($r_table, $single);
         }
-
         return $this->remove_less_ms($r_table);
     }
 
@@ -138,7 +171,7 @@ class Apriori
     private function remove_less_ms($table): array
     {
        return array_filter($table , function ($k) {
-            return $k[1] > $this->min_support;
+            return $k['support'] >= $this->min_support;
         });
     }
 
