@@ -1,6 +1,8 @@
 <?php
 namespace phpai;
 
+use function phpai\utils\cartesian as cartesian;
+
 class Apriori
 {
     /**
